@@ -6,7 +6,7 @@
 }
 
 .editor-root .milkdown {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 40px 60px 120px;
   min-height: 100%;
