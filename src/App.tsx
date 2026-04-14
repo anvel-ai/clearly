@@ -9,6 +9,7 @@ import { useAppStore } from "./stores/appStore";
 import { useFileOperations } from "./hooks/useFileOperations";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { readTextFile } from "@tauri-apps/plugin-fs";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import "./styles/variables.css";
 import "./styles/global.css";
 import "./App.css";
@@ -103,6 +104,24 @@ function App() {
     },
     [],
   );
+
+  // Drag & drop file open
+  useEffect(() => {
+    const unlisten = getCurrentWindow().onDragDropEvent((event) => {
+      if (event.payload.type === "drop") {
+        const paths = event.payload.paths;
+        const file = paths.find(
+          (p) => p.endsWith(".md") || p.endsWith(".markdown") || p.endsWith(".txt"),
+        );
+        if (file) {
+          handleFileSelect(file);
+        }
+      }
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [handleFileSelect]);
 
   const handleChange = useCallback(
     (_markdown: string) => {
