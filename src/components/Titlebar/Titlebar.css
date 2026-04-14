@@ -9,6 +9,8 @@
   user-select: none;
   -webkit-app-region: drag;
   flex-shrink: 0;
+  position: relative;
+  z-index: 100;
 }
 
 .titlebar-left,

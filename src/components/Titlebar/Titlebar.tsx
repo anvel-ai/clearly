@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import "./Titlebar.css";
 
 interface TitlebarProps {
@@ -15,8 +16,15 @@ export default function Titlebar({
 }: TitlebarProps) {
   const displayName = filename || "Untitled";
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only drag on left mouse button and not on buttons
+    if (e.button !== 0) return;
+    if ((e.target as HTMLElement).closest("button")) return;
+    getCurrentWindow().startDragging();
+  };
+
   return (
-    <div className="titlebar" data-tauri-drag-region>
+    <div className="titlebar" onMouseDown={handleMouseDown}>
       <div className="titlebar-left">
         <button className="titlebar-btn" onClick={onToggleSidebar} title="Toggle Sidebar">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
