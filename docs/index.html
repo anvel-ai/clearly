@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clearly — Minimal Markdown Editor</title>
+  <link rel="icon" href="clearly.ico" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #141414;
+      color: #f0f0e8;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 56px;
+      padding: 40px 24px;
+    }
+
+    .logo-card {
+      width: 340px;
+      height: 340px;
+      border: 2.5px solid rgba(240, 240, 232, 0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 40px;
+      gap: 18px;
+      position: relative;
+      transition: border-color 0.4s ease;
+    }
+
+    .logo-card:hover {
+      border-color: #f0f0e8;
+    }
+
+    .logo-mark {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .logo-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #f0f0e8;
+      position: absolute;
+      top: -20px;
+      left: 2px;
+    }
+
+    .logo-text {
+      font-size: 72px;
+      font-weight: 700;
+      color: #f0f0e8;
+      letter-spacing: -1.5px;
+      line-height: 1;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(240, 240, 232, 0.4);
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+    }
+
+    .hero-tagline {
+      text-align: center;
+      max-width: 480px;
+    }
+
+    .hero-tagline h2 {
+      font-size: 20px;
+      font-weight: 400;
+      color: rgba(240, 240, 232, 0.6);
+      line-height: 1.6;
+      letter-spacing: -0.2px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: #f0f0e8;
+      color: #141414;
+      border: 1px solid #f0f0e8;
+    }
+
+    .btn-primary:hover {
+      background: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(240, 240, 232, 0.12);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: rgba(240, 240, 232, 0.6);
+      border: 1px solid rgba(240, 240, 232, 0.15);
+    }
+
+    .btn-ghost:hover {
+      color: #f0f0e8;
+      border-color: rgba(240, 240, 232, 0.3);
+      background: rgba(240, 240, 232, 0.04);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      opacity: 0.25;
+      animation: bounce 2.5s ease infinite;
+    }
+
+    .scroll-hint svg {
+      width: 20px;
+      height: 20px;
+      stroke: #f0f0e8;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* ── Features ── */
+    .features {
+      padding: 120px 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(240, 240, 232, 0.3);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 48px 64px;
+    }
+
+    .feature {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feature-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(240, 240, 232, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+
+    .feature-icon svg {
+      width: 16px;
+      height: 16px;
+      stroke: rgba(240, 240, 232, 0.5);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .feature h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f0f0e8;
+      letter-spacing: -0.2px;
+    }
+
+    .feature p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(240, 240, 232, 0.4);
+    }
+
+    /* ── Preview ── */
+    .preview {
+      padding: 80px 24px 120px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .preview-window {
+      background: #1e1e1e;
+      border: 1px solid rgba(240, 240, 232, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .preview-titlebar {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      background: #252525;
+      border-bottom: 1px solid rgba(240, 240, 232, 0.06);
+      gap: 8px;
+    }
+
+    .preview-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .preview-dot:nth-child(1) { background: #ff5f57; }
+    .preview-dot:nth-child(2) { background: #ffbd2e; }
+    .preview-dot:nth-child(3) { background: #28c840; }
+
+    .preview-title {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(240, 240, 232, 0.35);
+      margin-right: 38px;
+    }
+
+    .preview-body {
+      padding: 48px 56px;
+      font-size: 15px;
+      line-height: 1.9;
+      color: rgba(240, 240, 232, 0.55);
+    }
+
+    .preview-body .heading {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f0f0e8;
+      margin-bottom: 12px;
+    }
+
+    .preview-body .subheading {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(240, 240, 232, 0.8);
+      margin-top: 28px;
+      margin-bottom: 8px;
+    }
+
+    .preview-body .text-muted {
+      color: rgba(240, 240, 232, 0.35);
+    }
+
+    .preview-body code {
+      background: rgba(240, 240, 232, 0.06);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      color: rgba(240, 240, 232, 0.6);
+    }
+
+    .preview-body .code-block {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 16px 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: rgba(240, 240, 232, 0.5);
+      overflow-x: auto;
+    }
+
+    .preview-body .blockquote {
+      border-left: 3px solid rgba(240, 240, 232, 0.15);
+      padding-left: 20px;
+      margin: 16px 0;
+      color: rgba(240, 240, 232, 0.4);
+      font-style: italic;
+    }
+
+    /* ── Stack ── */
+    .stack {
+      padding: 80px 24px 120px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .stack-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .stack-tag {
+      padding: 10px 20px;
+      border-radius: 100px;
+      border: 1px solid rgba(240, 240, 232, 0.1);
+      font-size: 13px;
+      color: rgba(240, 240, 232, 0.45);
+      transition: all 0.2s ease;
+    }
+
+    .stack-tag:hover {
+      border-color: rgba(240, 240, 232, 0.25);
+      color: rgba(240, 240, 232, 0.7);
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 48px 24px;
+      text-align: center;
+      border-top: 1px solid rgba(240, 240, 232, 0.06);
+    }
+
+    footer p {
+      font-size: 13px;
+      color: rgba(240, 240, 232, 0.2);
+    }
+
+    footer a {
+      color: rgba(240, 240, 232, 0.35);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: rgba(240, 240, 232, 0.6);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .logo-card {
+        width: 260px;
+        height: 260px;
+        padding: 28px;
+      }
+
+      .logo-text {
+        font-size: 52px;
+      }
+
+      .logo-dot {
+        width: 18px;
+        height: 18px;
+        top: -14px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        width: 100%;
+        max-width: 280px;
+      }
+
+      .btn {
+        justify-content: center;
+      }
+
+      .preview-body {
+        padding: 32px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="logo-card">
+      <div class="logo-mark">
+        <div class="logo-dot"></div>
+        <span class="logo-text">Clearly</span>
+      </div>
+      <p class="logo-sub">Minimal Markdown Editor</p>
+    </div>
+
+    <div class="hero-tagline">
+      <h2>Write with nothing in the way.<br>Just you and your words.</h2>
+    </div>
+
+    <div class="hero-actions">
+      <a href="https://github.com/anvel-ai/clearly/releases/download/v0.0.1/Clearly_0.0.1_aarch64.dmg" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for macOS
+      </a>
+      <a href="https://github.com/anvel-ai/clearly" class="btn btn-ghost">
+        GitHub
+      </a>
+    </div>
+
+    <div class="scroll-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <p class="section-label">Features</p>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+        </div>
+        <h3>WYSIWYG Editing</h3>
+        <p>Type markdown and see it rendered in real time. No split pane, no preview toggle. What you see is what you get.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <h3>Light & Dark Themes</h3>
+        <p>Switch between themes with a single click. Each carefully tuned for readability and comfort.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3>Code & Math</h3>
+        <p>Syntax-highlighted code blocks via CodeMirror. Inline and block LaTeX equations powered by KaTeX.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        </div>
+        <h3>File Management</h3>
+        <p>Built-in sidebar with file tree, quick open palette, and drag & drop. Your workspace, organized.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <h3>Tables & Diagrams</h3>
+        <p>Full table support with inline editing. Mermaid diagrams rendered right inside the editor.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        </div>
+        <h3>Auto Save</h3>
+        <p>Changes saved automatically as you type. Never lose your work again.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preview -->
+  <section class="preview">
+    <p class="section-label">Editor Preview</p>
+    <div class="preview-window">
+      <div class="preview-titlebar">
+        <div class="preview-dot"></div>
+        <div class="preview-dot"></div>
+        <div class="preview-dot"></div>
+        <span class="preview-title">notes.md</span>
+      </div>
+      <div class="preview-body">
+        <div class="heading">Meeting Notes</div>
+        <p>Discussed the new onboarding flow. Key decisions below.</p>
+        <div class="subheading">Action Items</div>
+        <p>Update the signup form to use <code>validateEmail()</code> before submission. Ship by end of week.</p>
+        <div class="blockquote">"Simplicity is the ultimate sophistication." — Leonardo da Vinci</div>
+        <div class="code-block"><span class="text-muted">function</span> greet(name) {<br>&nbsp;&nbsp;<span class="text-muted">return</span> `Hello, ${name}!`;<br>}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section class="stack">
+    <p class="section-label">Built With</p>
+    <div class="stack-list">
+      <span class="stack-tag">Tauri 2</span>
+      <span class="stack-tag">React 19</span>
+      <span class="stack-tag">TypeScript</span>
+      <span class="stack-tag">Milkdown</span>
+      <span class="stack-tag">CodeMirror</span>
+      <span class="stack-tag">KaTeX</span>
+      <span class="stack-tag">Mermaid</span>
+      <span class="stack-tag">Zustand</span>
+      <span class="stack-tag">Vite</span>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>Clearly &mdash; Open source, built with care. <a href="https://github.com/anvel-ai/clearly">GitHub</a> · <a href="https://buymeacoffee.com/taehuikim9h">Buy me a coffee</a></p>
+  </footer>
+
+<script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="taehuikim9h" data-description="Support me on Buy me a coffee!" data-message="" data-color="#FFDD00" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+.status-bar {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  background: var(--bg-titlebar);
+  border-top: 1px solid var(--border-color);
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.status-bar-left,
+.status-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-item {
+  white-space: nowrap;
+}
+
+.status-unsaved {
+  color: var(--accent-color);
+}
+
+.status-filepath {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
