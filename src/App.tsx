@@ -4,6 +4,7 @@ import Titlebar from "./components/Titlebar/Titlebar";
 import Sidebar from "./components/Sidebar/Sidebar";
 import StatusBar from "./components/StatusBar/StatusBar";
 import SearchReplace from "./components/SearchReplace/SearchReplace";
+import FileSearch from "./components/FileSearch/FileSearch";
 import { useAppStore } from "./stores/appStore";
 import { useFileOperations } from "./hooks/useFileOperations";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
@@ -67,6 +68,7 @@ function App() {
   const [editorContent, setEditorContent] = useState(DEFAULT_CONTENT);
   const [editorKey, setEditorKey] = useState(0);
   const [searchVisible, setSearchVisible] = useState(false);
+  const [fileSearchVisible, setFileSearchVisible] = useState(false);
   const { openFile, saveFile, saveAs, newFile, scheduleAutoSave } =
     useFileOperations();
 
@@ -120,6 +122,7 @@ function App() {
       onNew: handleNew,
       onToggleSidebar: toggleSidebar,
       onFind: () => setSearchVisible(true),
+      onFileSearch: () => setFileSearchVisible(true),
     }),
     [saveFile, saveAs, handleOpen, handleNew, toggleSidebar],
   );
@@ -149,6 +152,12 @@ function App() {
       </div>
       <StatusBar />
       <SearchReplace visible={searchVisible} onClose={() => setSearchVisible(false)} />
+      <FileSearch
+        visible={fileSearchVisible}
+        onClose={() => setFileSearchVisible(false)}
+        onFileSelect={handleFileSelect}
+        workspacePath={localStorage.getItem("clearly-workspace")}
+      />
     </div>
   );
 }

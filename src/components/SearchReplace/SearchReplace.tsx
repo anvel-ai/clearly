@@ -6,14 +6,50 @@ interface SearchReplaceProps {
   onClose: () => void;
 }
 
+interface MatchRange {
+  node: Text;
+  start: number;
+  end: number;
+}
+
+function findAllMatches(root: Element, term: string): MatchRange[] {
+  if (!term) return [];
+  const matches: MatchRange[] = [];
+  const lower = term.toLowerCase();
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text;
+    const text = node.textContent || "";
+    const textLower = text.toLowerCase();
+    let idx = textLower.indexOf(lower);
+    while (idx !== -1) {
+      matches.push({ node, start: idx, end: idx + term.length });
+      idx = textLower.indexOf(lower, idx + term.length);
+    }
+  }
+  return matches;
+}
+
+function highlightMatch(match: MatchRange) {
+  const range = document.createRange();
+  range.setStart(match.node, match.start);
+  range.setEnd(match.node, match.end);
+
+  const sel = window.getSelection();
+  sel?.removeAllRanges();
+  sel?.addRange(range);
+
+  const el = match.node.parentElement;
+  el?.scrollIntoView({ block: "center", behavior: "smooth" });
+}
+
 export default function SearchReplace({ visible, onClose }: SearchReplaceProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [replaceTerm, setReplaceTerm] = useState("");
-  const [matchCount, setMatchCount] = useState(0);
-  const [currentMatch, setCurrentMatch] = useState(0);
+  const [matches, setMatches] = useState<MatchRange[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
   const [showReplace, setShowReplace] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
-  const highlightsRef = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
     if (visible && searchRef.current) {
@@ -21,139 +57,109 @@ export default function SearchReplace({ visible, onClose }: SearchReplaceProps) 
       searchRef.current.select();
     }
     if (!visible) {
-      clearHighlights();
+      setSearchTerm("");
+      setMatches([]);
+      setCurrentIndex(-1);
+      window.getSelection()?.removeAllRanges();
     }
   }, [visible]);
 
-  const clearHighlights = useCallback(() => {
-    highlightsRef.current.forEach((el) => {
-      const parent = el.parentNode;
-      if (parent) {
-        parent.replaceChild(document.createTextNode(el.textContent || ""), el);
-        parent.normalize();
-      }
-    });
-    highlightsRef.current = [];
-    setMatchCount(0);
-    setCurrentMatch(0);
-  }, []);
-
   const doSearch = useCallback(() => {
-    clearHighlights();
-    if (!searchTerm) return;
-
     const editor = document.querySelector(".milkdown .ProseMirror");
-    if (!editor) return;
-
-    const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
-    const textNodes: Text[] = [];
-    while (walker.nextNode()) {
-      textNodes.push(walker.currentNode as Text);
+    if (!editor || !searchTerm.trim()) {
+      setMatches([]);
+      setCurrentIndex(-1);
+      return;
     }
-
-    const highlights: HTMLElement[] = [];
-    const searchLower = searchTerm.toLowerCase();
-
-    for (const node of textNodes) {
-      const text = node.textContent || "";
-      const textLower = text.toLowerCase();
-      let idx = textLower.indexOf(searchLower);
-      if (idx === -1) continue;
-
-      const frag = document.createDocumentFragment();
-      let lastIdx = 0;
-
-      while (idx !== -1) {
-        if (idx > lastIdx) {
-          frag.appendChild(document.createTextNode(text.slice(lastIdx, idx)));
-        }
-        const mark = document.createElement("mark");
-        mark.className = "search-highlight";
-        mark.textContent = text.slice(idx, idx + searchTerm.length);
-        highlights.push(mark);
-        frag.appendChild(mark);
-        lastIdx = idx + searchTerm.length;
-        idx = textLower.indexOf(searchLower, lastIdx);
-      }
-
-      if (lastIdx < text.length) {
-        frag.appendChild(document.createTextNode(text.slice(lastIdx)));
-      }
-
-      node.parentNode?.replaceChild(frag, node);
+    const found = findAllMatches(editor, searchTerm.trim());
+    setMatches(found);
+    if (found.length > 0) {
+      setCurrentIndex(0);
+      highlightMatch(found[0]);
+    } else {
+      setCurrentIndex(-1);
     }
-
-    highlightsRef.current = highlights;
-    setMatchCount(highlights.length);
-    if (highlights.length > 0) {
-      setCurrentMatch(1);
-      highlights[0].classList.add("search-highlight-active");
-      highlights[0].scrollIntoView({ block: "center" });
-    }
-  }, [searchTerm, clearHighlights]);
+  }, [searchTerm]);
 
   const navigateMatch = useCallback(
     (direction: "next" | "prev") => {
-      if (matchCount === 0) return;
-      const highlights = highlightsRef.current;
-      highlights[currentMatch - 1]?.classList.remove("search-highlight-active");
-
-      let next = direction === "next" ? currentMatch + 1 : currentMatch - 1;
-      if (next > matchCount) next = 1;
-      if (next < 1) next = matchCount;
-
-      setCurrentMatch(next);
-      highlights[next - 1]?.classList.add("search-highlight-active");
-      highlights[next - 1]?.scrollIntoView({ block: "center" });
+      // If no search done yet, do search first
+      if (matches.length === 0 && searchTerm.trim()) {
+        doSearch();
+        return;
+      }
+      if (matches.length === 0) return;
+      let next =
+        direction === "next"
+          ? (currentIndex + 1) % matches.length
+          : (currentIndex - 1 + matches.length) % matches.length;
+      setCurrentIndex(next);
+      highlightMatch(matches[next]);
     },
-    [currentMatch, matchCount],
+    [currentIndex, matches, searchTerm, doSearch],
   );
 
   const handleReplace = useCallback(() => {
-    if (matchCount === 0) return;
-    const mark = highlightsRef.current[currentMatch - 1];
-    if (!mark) return;
-
-    const textNode = document.createTextNode(replaceTerm);
-    mark.parentNode?.replaceChild(textNode, mark);
-    highlightsRef.current.splice(currentMatch - 1, 1);
-    setMatchCount((c) => c - 1);
-
-    if (highlightsRef.current.length > 0) {
-      const nextIdx = Math.min(currentMatch, highlightsRef.current.length);
-      setCurrentMatch(nextIdx);
-      highlightsRef.current[nextIdx - 1]?.classList.add("search-highlight-active");
-    } else {
-      setCurrentMatch(0);
+    if (matches.length === 0 || currentIndex < 0) return;
+    const match = matches[currentIndex];
+    try {
+      const range = document.createRange();
+      range.setStart(match.node, match.start);
+      range.setEnd(match.node, match.end);
+      range.deleteContents();
+      range.insertNode(document.createTextNode(replaceTerm));
+      match.node.parentNode?.normalize();
+    } catch {
+      // Node may have changed
     }
-  }, [currentMatch, matchCount, replaceTerm]);
+    doSearch();
+  }, [matches, currentIndex, replaceTerm, doSearch]);
 
   const handleReplaceAll = useCallback(() => {
-    highlightsRef.current.forEach((mark) => {
-      const textNode = document.createTextNode(replaceTerm);
-      mark.parentNode?.replaceChild(textNode, mark);
-    });
-    highlightsRef.current = [];
-    setMatchCount(0);
-    setCurrentMatch(0);
-  }, [replaceTerm]);
+    if (matches.length === 0) return;
+    for (let i = matches.length - 1; i >= 0; i--) {
+      try {
+        const m = matches[i];
+        const range = document.createRange();
+        range.setStart(m.node, m.start);
+        range.setEnd(m.node, m.end);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(replaceTerm));
+        m.node.parentNode?.normalize();
+      } catch {
+        // Node may have been modified
+      }
+    }
+    setMatches([]);
+    setCurrentIndex(-1);
+  }, [matches, replaceTerm]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
       } else if (e.key === "Enter") {
-        if (e.shiftKey) {
+        e.preventDefault();
+        if (matches.length === 0) {
+          doSearch();
+        } else if (e.shiftKey) {
           navigateMatch("prev");
         } else {
           navigateMatch("next");
         }
       }
     },
-    [onClose, navigateMatch],
+    [onClose, navigateMatch, doSearch, matches],
   );
 
   if (!visible) return null;
+
+  const matchDisplay =
+    matches.length > 0
+      ? `${currentIndex + 1}/${matches.length}`
+      : searchTerm.trim()
+        ? "No results"
+        : "";
 
   return (
     <div className="search-replace" onKeyDown={handleKeyDown}>
@@ -163,12 +169,15 @@ export default function SearchReplace({ visible, onClose }: SearchReplaceProps) 
           className="search-input"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyUp={() => doSearch()}
           placeholder="Search..."
         />
-        <span className="search-count">
-          {matchCount > 0 ? `${currentMatch}/${matchCount}` : "No results"}
-        </span>
+        {matchDisplay && <span className="search-count">{matchDisplay}</span>}
+        <button className="search-btn" onClick={doSearch} title="Search">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <circle cx="6.5" cy="6.5" r="5" />
+            <line x1="10" y1="10" x2="15" y2="15" />
+          </svg>
+        </button>
         <button className="search-btn" onClick={() => navigateMatch("prev")} title="Previous">
           &#8593;
         </button>

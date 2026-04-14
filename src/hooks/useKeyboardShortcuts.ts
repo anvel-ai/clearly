@@ -7,6 +7,7 @@ interface ShortcutHandlers {
   onNew?: () => void;
   onToggleSidebar?: () => void;
   onFind?: () => void;
+  onFileSearch?: () => void;
 }
 
 export function useKeyboardShortcuts(handlers: ShortcutHandlers) {
@@ -41,6 +42,10 @@ export function useKeyboardShortcuts(handlers: ShortcutHandlers) {
             e.preventDefault();
             handlers.onFind?.();
           }
+          break;
+        case "p":
+          e.preventDefault();
+          handlers.onFileSearch?.();
           break;
       }
     };
