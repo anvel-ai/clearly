@@ -8,37 +8,71 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - platform: macos-latest
             target: aarch64-apple-darwin
-          - platform: macos-latest
+            bundle: darwin-aarch64
+          - platform: macos-13
             target: x86_64-apple-darwin
+            bundle: darwin-x86_64
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            bundle: linux-x86_64
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
+            bundle: windows-x86_64
 
     runs-on: ${{ matrix.platform }}
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Linux system dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libsoup-3.0-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libayatana-appindicator3-dev
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+          key: ${{ matrix.target }}
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build Tauri app
+        id: tauri
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'Clearly ${{ github.ref_name }}'
@@ -48,7 +82,95 @@ jobs:
             ### Downloads
             - **macOS (Apple Silicon)** — `.dmg` (aarch64)
             - **macOS (Intel)** — `.dmg` (x86_64)
-            - **Windows** — `.msi` / `.exe`
+            - **Windows** — `-setup.exe` / `.msi` (x64)
+            - **Linux** — `.AppImage` / `.deb`
+
+            기존 사용자는 앱 내 업데이트 배너를 통해 자동으로 갱신됩니다.
           releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.target }}
+
+  publish-updater-json:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Generate and upload latest.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          VERSION="${TAG#v}"
+          PUB_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          WORK=$(mktemp -d)
+
+          echo "Fetching release assets for $TAG..."
+          gh release download "$TAG" --repo "$REPO" --dir "$WORK" --pattern "*.sig" --pattern "*.tar.gz" --pattern "*.AppImage.tar.gz*" --pattern "*-setup.exe*"
+
+          ls -la "$WORK"
+
+          # Helper: pick first sig matching a pattern, print its base64 contents
+          sig_for() {
+            local pat="$1"
+            local f
+            f=$(find "$WORK" -maxdepth 1 -type f -name "$pat" | head -n1 || true)
+            if [[ -n "$f" ]]; then
+              cat "$f"
+            fi
+          }
+
+          # macOS arm64
+          MAC_ARM_SIG=$(sig_for "*aarch64*.app.tar.gz.sig" || true)
+          if [[ -z "$MAC_ARM_SIG" ]]; then
+            MAC_ARM_SIG=$(sig_for "Clearly.app.tar.gz.sig" || true)
+          fi
+
+          # macOS x86_64
+          MAC_X64_SIG=$(sig_for "*x64*.app.tar.gz.sig" || true)
+          if [[ -z "$MAC_X64_SIG" ]]; then
+            MAC_X64_SIG=$(sig_for "*x86_64*.app.tar.gz.sig" || true)
+          fi
+
+          # Linux AppImage
+          LINUX_SIG=$(sig_for "*.AppImage.tar.gz.sig" || true)
+
+          # Windows NSIS installer
+          WIN_SIG=$(sig_for "*_x64-setup.exe.sig" || true)
+          if [[ -z "$WIN_SIG" ]]; then
+            WIN_SIG=$(sig_for "*-setup.exe.sig" || true)
+          fi
+
+          cat > "$WORK/latest.json" <<EOF
+          {
+            "version": "$VERSION",
+            "notes": "See release notes on GitHub",
+            "pub_date": "$PUB_DATE",
+            "platforms": {
+              "darwin-aarch64": {
+                "signature": "$MAC_ARM_SIG",
+                "url": "https://github.com/$REPO/releases/download/$TAG/Clearly_${VERSION}_aarch64.app.tar.gz"
+              },
+              "darwin-x86_64": {
+                "signature": "$MAC_X64_SIG",
+                "url": "https://github.com/$REPO/releases/download/$TAG/Clearly_${VERSION}_x64.app.tar.gz"
+              },
+              "linux-x86_64": {
+                "signature": "$LINUX_SIG",
+                "url": "https://github.com/$REPO/releases/download/$TAG/clearly_${VERSION}_amd64.AppImage.tar.gz"
+              },
+              "windows-x86_64": {
+                "signature": "$WIN_SIG",
+                "url": "https://github.com/$REPO/releases/download/$TAG/Clearly_${VERSION}_x64-setup.exe"
+              }
+            }
+          }
+          EOF
+
+          echo "--- latest.json ---"
+          cat "$WORK/latest.json"
+
+          gh release upload "$TAG" "$WORK/latest.json" --repo "$REPO" --clobber

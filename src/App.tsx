@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import StatusBar from "./components/StatusBar/StatusBar";
 import SearchReplace from "./components/SearchReplace/SearchReplace";
 import FileSearch from "./components/FileSearch/FileSearch";
+import UpdateBanner from "./components/UpdateBanner/UpdateBanner";
 import { useAppStore } from "./stores/appStore";
 import { useFileOperations } from "./hooks/useFileOperations";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
@@ -52,6 +53,16 @@ Inline math: $E = mc^2$
 | WYSIWYG | Done |
 | Themes  | Done |
 | Export  | Coming |
+
+### Mermaid Diagram
+
+\`\`\`mermaid
+flowchart LR
+    A[Write] --> B[Preview]
+    B --> C{Happy?}
+    C -->|Yes| D[Save]
+    C -->|No| A
+\`\`\`
 `;
 
 function App() {
@@ -160,6 +171,7 @@ function App() {
         onToggleTheme={toggleTheme}
         onToggleSidebar={toggleSidebar}
       />
+      <UpdateBanner />
       <div className="app-body">
         {sidebarOpen && <Sidebar onFileSelect={handleFileSelect} />}
         <Editor

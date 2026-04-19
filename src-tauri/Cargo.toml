@@ -1,9 +1,9 @@
 [package]
 name = "clearly"
-version = "0.1.0"
+version = "0.0.2"
 description = "A Typora-like markdown editor"
 authors = ["taehuikim"]
-edition = "2021"
+edition = "2024"
 
 [lib]
 name = "clearly_lib"
@@ -19,3 +19,7 @@ tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+
+[target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"

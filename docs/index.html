@@ -368,6 +368,178 @@
       color: rgba(240, 240, 232, 0.6);
     }
 
+    /* ── Other downloads ── */
+    .download-alt {
+      position: relative;
+      margin-top: -40px;
+    }
+
+    .download-alt-toggle {
+      background: transparent;
+      border: none;
+      color: rgba(240, 240, 232, 0.4);
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .download-alt-toggle:hover {
+      color: rgba(240, 240, 232, 0.75);
+      background: rgba(240, 240, 232, 0.04);
+    }
+
+    .download-alt-toggle svg {
+      width: 12px;
+      height: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .download-alt[data-open="true"] .download-alt-toggle svg {
+      transform: rotate(180deg);
+    }
+
+    .download-alt-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 240px;
+      background: #1e1e1e;
+      border: 1px solid rgba(240, 240, 232, 0.1);
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .download-alt-menu[hidden] {
+      display: none;
+    }
+
+    .download-alt-menu a {
+      display: block;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: rgba(240, 240, 232, 0.7);
+      text-decoration: none;
+      border-radius: 5px;
+      white-space: nowrap;
+      text-align: left;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .download-alt-menu a:hover {
+      background: rgba(240, 240, 232, 0.06);
+      color: #f0f0e8;
+    }
+
+    /* ── How to Use ── */
+    .howto {
+      padding: 80px 24px 120px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .howto-start {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 72px;
+    }
+
+    .howto-step {
+      padding: 24px;
+      border: 1px solid rgba(240, 240, 232, 0.08);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .howto-step-num {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      color: rgba(240, 240, 232, 0.3);
+      letter-spacing: 1px;
+    }
+
+    .howto-step h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f0f0e8;
+      letter-spacing: -0.2px;
+    }
+
+    .howto-step p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: rgba(240, 240, 232, 0.4);
+    }
+
+    .howto-step kbd,
+    .howto-hint kbd {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      color: rgba(240, 240, 232, 0.75);
+      background: rgba(240, 240, 232, 0.06);
+      border: 1px solid rgba(240, 240, 232, 0.12);
+      border-radius: 4px;
+      padding: 1px 6px;
+      white-space: nowrap;
+    }
+
+    .howto-hint {
+      font-size: 12px;
+      color: rgba(240, 240, 232, 0.35);
+      margin-bottom: 24px;
+    }
+
+    .shortcuts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0 64px;
+    }
+
+    .shortcut-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(240, 240, 232, 0.05);
+    }
+
+    .shortcut-label {
+      font-size: 14px;
+      color: rgba(240, 240, 232, 0.6);
+    }
+
+    .shortcut-keys {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .shortcut-keys kbd {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(240, 240, 232, 0.8);
+      background: rgba(240, 240, 232, 0.05);
+      border: 1px solid rgba(240, 240, 232, 0.12);
+      border-radius: 4px;
+      padding: 3px 8px;
+      min-width: 24px;
+      text-align: center;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 640px) {
       .logo-card {
@@ -404,6 +576,14 @@
       .preview-body {
         padding: 32px 28px;
       }
+
+      .howto-start {
+        grid-template-columns: 1fr;
+      }
+
+      .shortcuts-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -424,13 +604,21 @@
     </div>
 
     <div class="hero-actions">
-      <a href="https://github.com/anvel-ai/clearly/releases/download/v0.0.1/Clearly_0.0.1_aarch64.dmg" class="btn btn-primary">
+      <a id="download-primary" href="https://github.com/anvel-ai/clearly/releases/latest" class="btn btn-primary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download for macOS
+        <span id="download-label">Download</span>
       </a>
       <a href="https://github.com/anvel-ai/clearly" class="btn btn-ghost">
         GitHub
       </a>
+    </div>
+
+    <div id="download-alt" class="download-alt" hidden>
+      <button id="download-alt-toggle" type="button" class="download-alt-toggle" aria-haspopup="true" aria-expanded="false">
+        <span>Other downloads</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="download-alt-menu" class="download-alt-menu" role="menu" hidden></div>
     </div>
 
     <div class="scroll-hint">
@@ -515,6 +703,70 @@
     </div>
   </section>
 
+  <!-- How to Use -->
+  <section class="howto">
+    <p class="section-label">How to Use</p>
+
+    <div class="howto-start">
+      <div class="howto-step">
+        <span class="howto-step-num">01</span>
+        <h4>Open a file</h4>
+        <p>Drop a <code style="font-family:inherit">.md</code> file onto Clearly, or press <kbd>⌘ O</kbd> to browse.</p>
+      </div>
+      <div class="howto-step">
+        <span class="howto-step-num">02</span>
+        <h4>Write in markdown</h4>
+        <p>Type <code style="font-family:inherit"># Heading</code>, <code style="font-family:inherit">**bold**</code>, or <kbd>/</kbd> for the slash menu. Rendering happens live.</p>
+      </div>
+      <div class="howto-step">
+        <span class="howto-step-num">03</span>
+        <h4>Auto-save</h4>
+        <p>Changes save two seconds after you stop typing. A dot (•) in the title bar means unsaved.</p>
+      </div>
+    </div>
+
+    <p class="howto-hint">On Windows &amp; Linux, use <kbd>Ctrl</kbd> instead of <kbd>⌘</kbd>.</p>
+
+    <div class="shortcuts-grid">
+      <div>
+        <div class="shortcut-row">
+          <span class="shortcut-label">New file</span>
+          <span class="shortcut-keys"><kbd>⌘</kbd><kbd>N</kbd></span>
+        </div>
+        <div class="shortcut-row">
+          <span class="shortcut-label">Open file</span>
+          <span class="shortcut-keys"><kbd>⌘</kbd><kbd>O</kbd></span>
+        </div>
+        <div class="shortcut-row">
+          <span class="shortcut-label">Save</span>
+          <span class="shortcut-keys"><kbd>⌘</kbd><kbd>S</kbd></span>
+        </div>
+        <div class="shortcut-row">
+          <span class="shortcut-label">Save as</span>
+          <span class="shortcut-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>S</kbd></span>
+        </div>
+      </div>
+      <div>
+        <div class="shortcut-row">
+          <span class="shortcut-label">Quick open</span>
+          <span class="shortcut-keys"><kbd>⌘</kbd><kbd>P</kbd></span>
+        </div>
+        <div class="shortcut-row">
+          <span class="shortcut-label">Find &amp; replace</span>
+          <span class="shortcut-keys"><kbd>⌘</kbd><kbd>F</kbd></span>
+        </div>
+        <div class="shortcut-row">
+          <span class="shortcut-label">Toggle sidebar</span>
+          <span class="shortcut-keys"><kbd>⌘</kbd><kbd>B</kbd></span>
+        </div>
+        <div class="shortcut-row">
+          <span class="shortcut-label">Close dialog</span>
+          <span class="shortcut-keys"><kbd>Esc</kbd></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Tech Stack -->
   <section class="stack">
     <p class="section-label">Built With</p>
@@ -535,6 +787,121 @@
   <footer>
     <p>Clearly &mdash; Open source, built with care. <a href="https://github.com/anvel-ai/clearly">GitHub</a> · <a href="https://buymeacoffee.com/taehuikim9h">Buy me a coffee</a></p>
   </footer>
+
+<script>
+  (async function setupDownload() {
+    const REPO = 'anvel-ai/clearly';
+    const btn = document.getElementById('download-primary');
+    const label = document.getElementById('download-label');
+    const altWrap = document.getElementById('download-alt');
+    const altToggle = document.getElementById('download-alt-toggle');
+    const altMenu = document.getElementById('download-alt-menu');
+    const releasesUrl = `https://github.com/${REPO}/releases/latest`;
+
+    // Asset naming follows .github/workflows/release.yml:
+    //   macOS arm64  : Clearly_<ver>_aarch64.dmg
+    //   macOS x64    : Clearly_<ver>_x64.dmg
+    //   Windows NSIS : Clearly_<ver>_x64-setup.exe
+    //   Windows MSI  : Clearly_<ver>_x64_en-US.msi
+    //   Linux AppImg : clearly_<ver>_amd64.AppImage
+    //   Linux deb    : clearly_<ver>_amd64.deb
+    const PLATFORMS = [
+      { id: 'mac-arm64', label: 'macOS (Apple Silicon)', match: /_aarch64\.dmg$/i, name: (v) => `Clearly_${v}_aarch64.dmg` },
+      { id: 'mac-intel', label: 'macOS (Intel)', match: /_x64\.dmg$/i, name: (v) => `Clearly_${v}_x64.dmg` },
+      { id: 'windows', label: 'Windows', match: /_x64-setup\.exe$/i, name: (v) => `Clearly_${v}_x64-setup.exe` },
+      { id: 'windows-msi', label: 'Windows (MSI)', match: /_x64[^/]*\.msi$/i, name: (v) => `Clearly_${v}_x64_en-US.msi` },
+      { id: 'linux-appimage', label: 'Linux (AppImage)', match: /_amd64\.AppImage$/i, name: (v) => `clearly_${v}_amd64.AppImage` },
+      { id: 'linux-deb', label: 'Linux (.deb)', match: /_amd64\.deb$/i, name: (v) => `clearly_${v}_amd64.deb` },
+    ];
+
+    async function detectMacArch() {
+      try {
+        if (navigator.userAgentData?.getHighEntropyValues) {
+          const { architecture } = await navigator.userAgentData.getHighEntropyValues(['architecture']);
+          if (architecture === 'arm') return 'arm64';
+          if (architecture === 'x86') return 'intel';
+        }
+      } catch (_) {}
+      try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        const ext = gl?.getExtension('WEBGL_debug_renderer_info');
+        const renderer = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : '';
+        if (/Apple (M\d|GPU)/i.test(renderer)) return 'arm64';
+        if (/Intel|AMD|Radeon/i.test(renderer)) return 'intel';
+      } catch (_) {}
+      return 'arm64';
+    }
+
+    async function detectPlatform() {
+      const ua = navigator.userAgent;
+      const plat = (navigator.userAgentData?.platform || navigator.platform || '').toLowerCase();
+      if (plat.includes('mac') || /mac/i.test(ua)) {
+        const arch = await detectMacArch();
+        return arch === 'arm64' ? 'mac-arm64' : 'mac-intel';
+      }
+      if (/win/i.test(plat) || /Windows/i.test(ua)) return 'windows';
+      if (/linux/i.test(plat) || /Linux/i.test(ua)) return 'linux-appimage';
+      return null;
+    }
+
+    const detected = await detectPlatform();
+    const primary = PLATFORMS.find(p => p.id === detected);
+    label.textContent = primary ? `Download for ${primary.label}` : 'Download';
+
+    let assetMap = {};
+    let version = '';
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
+      if (!res.ok) throw new Error('release api ' + res.status);
+      const rel = await res.json();
+      version = (rel.tag_name || '').replace(/^v/, '');
+      const assets = rel.assets || [];
+      for (const p of PLATFORMS) {
+        const asset = assets.find(a => p.match.test(a.name));
+        if (asset) assetMap[p.id] = asset.browser_download_url;
+      }
+    } catch (_) {}
+
+    // Fallback: construct direct URLs using the release.yml naming convention.
+    if (version) {
+      const tag = `v${version}`;
+      for (const p of PLATFORMS) {
+        if (!assetMap[p.id]) {
+          assetMap[p.id] = `https://github.com/${REPO}/releases/download/${tag}/${p.name(version)}`;
+        }
+      }
+    }
+
+    btn.href = (primary && assetMap[primary.id]) || releasesUrl;
+
+    const others = PLATFORMS.filter(p => p.id !== detected);
+    altMenu.replaceChildren(...others.map(p => {
+      const a = document.createElement('a');
+      a.href = assetMap[p.id] || releasesUrl;
+      a.textContent = p.label;
+      a.setAttribute('role', 'menuitem');
+      return a;
+    }));
+    altWrap.hidden = false;
+
+    function setOpen(open) {
+      altMenu.hidden = !open;
+      altToggle.setAttribute('aria-expanded', String(open));
+      altWrap.dataset.open = String(open);
+    }
+    altToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setOpen(altMenu.hidden);
+    });
+    document.addEventListener('click', (e) => {
+      if (!altWrap.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  })();
+</script>
 
 <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="taehuikim9h" data-description="Support me on Buy me a coffee!" data-message="" data-color="#FFDD00" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>

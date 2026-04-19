@@ -26,6 +26,8 @@
   --crepe-color-on-surface: var(--text-primary);
   --crepe-color-on-surface-variant: var(--text-secondary);
   --crepe-color-outline: var(--text-secondary);
+  --crepe-color-hover: var(--bg-hover);
+  --crepe-color-selected: var(--bg-active);
   --crepe-color-primary: var(--accent-color);
   --crepe-color-secondary: var(--accent-light);
   --crepe-color-error: #e53e3e;
