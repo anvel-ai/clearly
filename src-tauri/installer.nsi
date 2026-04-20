@@ -1,5 +1,12 @@
 Unicode true
 ManifestDPIAware true
+
+; Make the installer fully silent by default — no wizard, no progress window.
+; The Tauri section logic still runs; .onInstSuccess launches the app so the
+; user sees Clearly open instead of an install dialog (Discord-style UX).
+; The installer can still be explicitly invoked with /S by the updater.
+SilentInstall silent
+SilentUnInstall silent
 ; Add in `dpiAwareness` `PerMonitorV2` to manifest for Windows 10 1607+ (note this should not affect lower versions since they should be able to ignore this and pick up `dpiAware` `true` set by `ManifestDPIAware true`)
 ; Currently undocumented on NSIS's website but is in the Docs folder of source tree, see
 ; https://github.com/kichik/nsis/blob/5fc0b87b819a9eec006df4967d08e522ddd651c9/Docs/src/attributes.but#L286-L300
@@ -737,17 +744,16 @@ Section Install
 SectionEnd
 
 Function .onInstSuccess
-  ; In silent mode (/S, used by the updater), only restart the app when
-  ; /R was passed — this lets the updater control the restart flow.
-  ${If} ${Silent}
+  ; Updater path: /UPDATE flag set → updater controls restart via /R.
+  ${If} $UpdateMode = 1
     ${GetOptions} $CMDLINE "/R" $R0
     ${IfNot} ${Errors}
       ${GetOptions} $CMDLINE "/ARGS" $R0
       nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" "$R0"
     ${EndIf}
-  ${ElseIf} $PassiveMode = 1
-    ; Passive mode (default double-click) → always launch the app so the
-    ; user sees something happen after the installer closes.
+  ${Else}
+    ; User install path (double-click or explicit run) → always launch the
+    ; app so something visibly happens after the (invisible) install.
     nsis_tauri_utils::RunAsUser "$INSTDIR\${MAINBINARYNAME}.exe" ""
   ${EndIf}
 FunctionEnd
