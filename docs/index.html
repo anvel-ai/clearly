@@ -4,7 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Clearly — Minimal Markdown Editor</title>
+  <meta name="description" content="Write with nothing in the way. A minimal, WYSIWYG markdown editor for macOS, Windows, and Linux." />
   <link rel="icon" href="clearly.ico" />
+  <link rel="canonical" href="https://anvel-ai.github.io/clearly/" />
+
+  <!-- Open Graph (Facebook, LinkedIn, KakaoTalk, Slack, Discord) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Clearly" />
+  <meta property="og:title" content="Clearly — Minimal Markdown Editor" />
+  <meta property="og:description" content="Write with nothing in the way. A minimal, WYSIWYG markdown editor for macOS, Windows, and Linux." />
+  <meta property="og:url" content="https://anvel-ai.github.io/clearly/" />
+  <meta property="og:image" content="https://anvel-ai.github.io/clearly/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Clearly editor showing a markdown document with WYSIWYG rendering." />
+  <meta property="og:locale" content="ko_KR" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Clearly — Minimal Markdown Editor" />
+  <meta name="twitter:description" content="Write with nothing in the way. A minimal, WYSIWYG markdown editor for macOS, Windows, and Linux." />
+  <meta name="twitter:image" content="https://anvel-ai.github.io/clearly/og-image.jpg" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -448,6 +468,38 @@
       color: #f0f0e8;
     }
 
+    /* ── First-run install notice ── */
+    .download-note {
+      max-width: 420px;
+      margin: 18px auto 0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(240, 240, 232, 0.08);
+      background: rgba(240, 240, 232, 0.025);
+      font-size: 12px;
+      line-height: 1.6;
+      color: rgba(240, 240, 232, 0.55);
+      text-align: center;
+    }
+
+    .download-note strong {
+      color: rgba(240, 240, 232, 0.8);
+      font-weight: 500;
+    }
+
+    .download-note kbd {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      background: rgba(240, 240, 232, 0.08);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: rgba(240, 240, 232, 0.75);
+    }
+
+    .download-note[hidden] {
+      display: none;
+    }
+
     /* ── How to Use ── */
     .howto {
       padding: 80px 24px 120px;
@@ -627,6 +679,8 @@
       </button>
       <div id="download-alt-menu" class="download-alt-menu" role="menu" hidden></div>
     </div>
+
+    <div id="download-note" class="download-note" hidden></div>
 
     <div class="scroll-hint">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -840,6 +894,17 @@
     const detected = await detectPlatform();
     const primary = PLATFORMS.find(p => p.id === detected);
     label.textContent = primary ? `Download for ${primary.label}` : 'Download';
+
+    const note = document.getElementById('download-note');
+    const NOTES = {
+      'mac-arm64': `<strong>첫 실행 안내:</strong> macOS가 "인터넷에서 다운로드한 앱" 경고를 띄우면 <kbd>열기</kbd>를 클릭하세요. 서명·공증된 안전한 앱입니다.`,
+      'mac-intel': `<strong>첫 실행 안내:</strong> macOS가 "인터넷에서 다운로드한 앱" 경고를 띄우면 <kbd>열기</kbd>를 클릭하세요. 서명·공증된 안전한 앱입니다.`,
+      'windows': `<strong>SmartScreen 경고가 뜨면:</strong> <kbd>추가 정보</kbd> → <kbd>실행</kbd> 클릭하세요. 코드 서명 인증서 도입 전까지 표시됩니다.`,
+    };
+    if (detected && NOTES[detected]) {
+      note.innerHTML = NOTES[detected];
+      note.hidden = false;
+    }
 
     let assetMap = {};
     let version = '';
