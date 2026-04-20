@@ -66,3 +66,42 @@
   background: var(--bg-hover);
   color: var(--text-primary);
 }
+
+/* Windows / Linux: drop the macOS traffic-light reservation on the left. */
+.titlebar--custom-controls {
+  padding-left: 12px;
+}
+
+/* Windows / Linux: custom minimize / maximize / close group. */
+.titlebar-window-controls {
+  display: flex;
+  align-items: stretch;
+  margin-left: 8px;
+  margin-right: -12px;
+  height: 40px;
+  -webkit-app-region: no-drag;
+}
+
+.titlebar-ctrl {
+  width: 46px;
+  height: 100%;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.titlebar-ctrl:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.titlebar-ctrl--close:hover {
+  background: #e81123;
+  color: #ffffff;
+}
