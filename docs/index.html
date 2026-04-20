@@ -470,32 +470,34 @@
 
     /* ── First-run install notice ── */
     .download-note {
-      max-width: 420px;
-      margin: 18px auto 0;
+      max-width: 460px;
+      margin: 20px auto 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
       padding: 12px 16px;
       border-radius: 8px;
-      border: 1px solid rgba(240, 240, 232, 0.08);
-      background: rgba(240, 240, 232, 0.025);
-      font-size: 12px;
+      border: 1px solid rgba(240, 240, 232, 0.07);
+      font-size: 12.5px;
       line-height: 1.6;
-      color: rgba(240, 240, 232, 0.55);
-      text-align: center;
+      color: rgba(240, 240, 232, 0.5);
+      text-align: left;
     }
 
-    .download-note strong {
-      display: inline-block;
-      margin-bottom: 4px;
-      color: rgba(240, 240, 232, 0.8);
-      font-weight: 500;
+    .download-note::before {
+      content: "";
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      margin-top: 2px;
+      background: rgba(240, 240, 232, 0.35);
+      -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='12' y1='16' x2='12' y2='12'/><line x1='12' y1='8' x2='12.01' y2='8'/></svg>") no-repeat center / contain;
+              mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='12' y1='16' x2='12' y2='12'/><line x1='12' y1='8' x2='12.01' y2='8'/></svg>") no-repeat center / contain;
     }
 
-    .download-note kbd {
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 11px;
-      background: rgba(240, 240, 232, 0.08);
-      padding: 1px 6px;
-      border-radius: 3px;
+    .download-note b {
       color: rgba(240, 240, 232, 0.75);
+      font-weight: 500;
     }
 
     .download-note[hidden] {
@@ -893,9 +895,9 @@
 
     const note = document.getElementById('download-note');
     const NOTES = {
-      'mac-arm64': `<strong>First launch</strong><br>If macOS warns that the app was downloaded from the Internet, click <kbd>Open</kbd>. The build is signed and notarized by Apple.`,
-      'mac-intel': `<strong>First launch</strong><br>If macOS warns that the app was downloaded from the Internet, click <kbd>Open</kbd>. The build is signed and notarized by Apple.`,
-      'windows': `<strong>If SmartScreen appears</strong><br>Click <kbd>More info</kbd> → <kbd>Run anyway</kbd>. The warning will go away once the app builds download reputation.`,
+      'mac-arm64': `<span>On first launch, macOS may warn about an app downloaded from the Internet. Click <b>Open</b> — the build is signed and notarized by Apple.</span>`,
+      'mac-intel': `<span>On first launch, macOS may warn about an app downloaded from the Internet. Click <b>Open</b> — the build is signed and notarized by Apple.</span>`,
+      'windows': `<span>If SmartScreen shows a warning, click <b>More info</b> → <b>Run anyway</b>. It goes away as the app builds download reputation.</span>`,
     };
     if (detected && NOTES[detected]) {
       note.innerHTML = NOTES[detected];
