@@ -469,21 +469,12 @@ FunctionEnd
 {{/each}}
 
 Function .onInit
-  ; ── CUSTOM TEMPLATE SMOKE TEST ──
-  ; If this template is actually being compiled by Tauri, the following
-  ; unknown directive will cause makensis to fail. If the build succeeds,
-  ; Tauri is silently falling back to the default template.
-  !error "CLEARLY_CUSTOM_TEMPLATE_SMOKE_TEST: this line should abort the build"
-
-  ; Default to passive mode so double-click yields a silent install with
-  ; only a progress window. /S still works for the fully-silent path used
-  ; by the Tauri updater.
+  ; Always run as "passive": skip the welcome/license/directory/start-menu
+  ; wizard pages and show only the progress window. The app is auto-launched
+  ; on success (see .onInstSuccess). /S (NSIS built-in silent mode) continues
+  ; to work separately — the Tauri updater uses that path and retains its
+  ; own restart control via /R.
   StrCpy $PassiveMode 1
-
-  ${GetOptions} $CMDLINE "/P" $PassiveMode
-  ${IfNot} ${Errors}
-    StrCpy $PassiveMode 1
-  ${EndIf}
 
   ${GetOptions} $CMDLINE "/NS" $NoShortcutMode
   ${IfNot} ${Errors}
