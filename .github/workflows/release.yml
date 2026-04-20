@@ -97,11 +97,12 @@ jobs:
 
             기존 사용자는 앱 내 업데이트 배너를 통해 자동으로 갱신됩니다.
           releaseDraft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
           args: --target ${{ matrix.target }}
 
   publish-updater-json:
     needs: build
+    if: ${{ !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
