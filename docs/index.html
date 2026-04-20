@@ -271,6 +271,13 @@
       color: rgba(240, 240, 232, 0.55);
     }
 
+    .preview-video {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #1e1e1e;
+    }
+
     .preview-body .heading {
       font-size: 28px;
       font-weight: 700;
@@ -628,60 +635,6 @@
     </div>
   </section>
 
-  <!-- Features -->
-  <section class="features">
-    <p class="section-label">Features</p>
-    <div class="features-grid">
-      <div class="feature">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-        </div>
-        <h3>WYSIWYG Editing</h3>
-        <p>Type markdown and see it rendered in real time. No split pane, no preview toggle. What you see is what you get.</p>
-      </div>
-
-      <div class="feature">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        </div>
-        <h3>Light & Dark Themes</h3>
-        <p>Switch between themes with a single click. Each carefully tuned for readability and comfort.</p>
-      </div>
-
-      <div class="feature">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        </div>
-        <h3>Code & Math</h3>
-        <p>Syntax-highlighted code blocks via CodeMirror. Inline and block LaTeX equations powered by KaTeX.</p>
-      </div>
-
-      <div class="feature">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-        </div>
-        <h3>File Management</h3>
-        <p>Built-in sidebar with file tree, quick open palette, and drag & drop. Your workspace, organized.</p>
-      </div>
-
-      <div class="feature">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        </div>
-        <h3>Tables & Diagrams</h3>
-        <p>Full table support with inline editing. Mermaid diagrams rendered right inside the editor.</p>
-      </div>
-
-      <div class="feature">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        </div>
-        <h3>Auto Save</h3>
-        <p>Changes saved automatically as you type. Never lose your work again.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- Preview -->
   <section class="preview">
     <p class="section-label">Editor Preview</p>
@@ -692,14 +645,15 @@
         <div class="preview-dot"></div>
         <span class="preview-title">notes.md</span>
       </div>
-      <div class="preview-body">
-        <div class="heading">Meeting Notes</div>
-        <p>Discussed the new onboarding flow. Key decisions below.</p>
-        <div class="subheading">Action Items</div>
-        <p>Update the signup form to use <code>validateEmail()</code> before submission. Ship by end of week.</p>
-        <div class="blockquote">"Simplicity is the ultimate sophistication." — Leonardo da Vinci</div>
-        <div class="code-block"><span class="text-muted">function</span> greet(name) {<br>&nbsp;&nbsp;<span class="text-muted">return</span> `Hello, ${name}!`;<br>}</div>
-      </div>
+      <video
+        class="preview-video"
+        src="video.mp4"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+      ></video>
     </div>
   </section>
 
@@ -767,19 +721,57 @@
     </div>
   </section>
 
-  <!-- Tech Stack -->
-  <section class="stack">
-    <p class="section-label">Built With</p>
-    <div class="stack-list">
-      <span class="stack-tag">Tauri 2</span>
-      <span class="stack-tag">React 19</span>
-      <span class="stack-tag">TypeScript</span>
-      <span class="stack-tag">Milkdown</span>
-      <span class="stack-tag">CodeMirror</span>
-      <span class="stack-tag">KaTeX</span>
-      <span class="stack-tag">Mermaid</span>
-      <span class="stack-tag">Zustand</span>
-      <span class="stack-tag">Vite</span>
+  <!-- Features -->
+  <section class="features">
+    <p class="section-label">Features</p>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+        </div>
+        <h3>WYSIWYG Editing</h3>
+        <p>Type markdown and see it rendered in real time. No split pane, no preview toggle. What you see is what you get.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <h3>Light & Dark Themes</h3>
+        <p>Switch between themes with a single click. Each carefully tuned for readability and comfort.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3>Code & Math</h3>
+        <p>Syntax-highlighted code blocks via CodeMirror. Inline and block LaTeX equations powered by KaTeX.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        </div>
+        <h3>File Management</h3>
+        <p>Built-in sidebar with file tree, quick open palette, and drag & drop. Your workspace, organized.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <h3>Tables & Diagrams</h3>
+        <p>Full table support with inline editing. Mermaid diagrams rendered right inside the editor.</p>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        </div>
+        <h3>Auto Save</h3>
+        <p>Changes saved automatically as you type. Never lose your work again.</p>
+      </div>
     </div>
   </section>
 
