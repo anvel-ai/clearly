@@ -483,6 +483,8 @@
     }
 
     .download-note strong {
+      display: inline-block;
+      margin-bottom: 4px;
       color: rgba(240, 240, 232, 0.8);
       font-weight: 500;
     }
@@ -897,9 +899,9 @@
 
     const note = document.getElementById('download-note');
     const NOTES = {
-      'mac-arm64': `<strong>First launch:</strong> If macOS warns that the app was downloaded from the Internet, click <kbd>Open</kbd>. The build is signed and notarized by Apple.`,
-      'mac-intel': `<strong>First launch:</strong> If macOS warns that the app was downloaded from the Internet, click <kbd>Open</kbd>. The build is signed and notarized by Apple.`,
-      'windows': `<strong>If SmartScreen appears:</strong> click <kbd>More info</kbd> → <kbd>Run anyway</kbd>. The warning will go away once the app builds download reputation.`,
+      'mac-arm64': `<strong>First launch</strong><br>If macOS warns that the app was downloaded from the Internet, click <kbd>Open</kbd>. The build is signed and notarized by Apple.`,
+      'mac-intel': `<strong>First launch</strong><br>If macOS warns that the app was downloaded from the Internet, click <kbd>Open</kbd>. The build is signed and notarized by Apple.`,
+      'windows': `<strong>If SmartScreen appears</strong><br>Click <kbd>More info</kbd> → <kbd>Run anyway</kbd>. The warning will go away once the app builds download reputation.`,
     };
     if (detected && NOTES[detected]) {
       note.innerHTML = NOTES[detected];
