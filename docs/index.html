@@ -688,12 +688,6 @@
   <section class="preview">
     <p class="section-label">Editor Preview</p>
     <div class="preview-window">
-      <div class="preview-titlebar">
-        <div class="preview-dot"></div>
-        <div class="preview-dot"></div>
-        <div class="preview-dot"></div>
-        <span class="preview-title">notes.md</span>
-      </div>
       <video
         class="preview-video"
         src="video.mp4"
@@ -844,15 +838,17 @@
     //   macOS x64    : Clearly_<ver>_x64.dmg
     //   Windows NSIS : Clearly_<ver>_x64-setup.exe
     //   Windows MSI  : Clearly_<ver>_x64_en-US.msi
-    //   Linux AppImg : clearly_<ver>_amd64.AppImage
     //   Linux deb    : clearly_<ver>_amd64.deb
+    //   Linux rpm    : Clearly-<ver>-1.x86_64.rpm
+    //   Linux AppImg : clearly_<ver>_amd64.AppImage
     const PLATFORMS = [
       { id: 'mac-arm64', label: 'macOS (Apple Silicon)', match: /_aarch64\.dmg$/i, name: (v) => `Clearly_${v}_aarch64.dmg` },
       { id: 'mac-intel', label: 'macOS (Intel)', match: /_x64\.dmg$/i, name: (v) => `Clearly_${v}_x64.dmg` },
       { id: 'windows', label: 'Windows', match: /_x64-setup\.exe$/i, name: (v) => `Clearly_${v}_x64-setup.exe` },
       { id: 'windows-msi', label: 'Windows (MSI)', match: /_x64[^/]*\.msi$/i, name: (v) => `Clearly_${v}_x64_en-US.msi` },
+      { id: 'linux-deb', label: 'Linux (Debian / Ubuntu)', match: /_amd64\.deb$/i, name: (v) => `clearly_${v}_amd64.deb` },
+      { id: 'linux-rpm', label: 'Linux (Fedora / RHEL)', match: /\.x86_64\.rpm$/i, name: (v) => `Clearly-${v}-1.x86_64.rpm` },
       { id: 'linux-appimage', label: 'Linux (AppImage)', match: /_amd64\.AppImage$/i, name: (v) => `clearly_${v}_amd64.AppImage` },
-      { id: 'linux-deb', label: 'Linux (.deb)', match: /_amd64\.deb$/i, name: (v) => `clearly_${v}_amd64.deb` },
     ];
 
     async function detectMacArch() {
@@ -882,7 +878,11 @@
         return arch === 'arm64' ? 'mac-arm64' : 'mac-intel';
       }
       if (/win/i.test(plat) || /Windows/i.test(ua)) return 'windows';
-      if (/linux/i.test(plat) || /Linux/i.test(ua)) return 'linux-appimage';
+      if (/linux/i.test(plat) || /Linux/i.test(ua)) {
+        // Prefer native package managers over AppImage (no chmod needed).
+        if (/fedora|rhel|centos|rocky|alma/i.test(ua)) return 'linux-rpm';
+        return 'linux-deb';
+      }
       return null;
     }
 
