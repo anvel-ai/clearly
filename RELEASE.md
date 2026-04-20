@@ -91,3 +91,108 @@ Each platform needs its own signed `.tar.gz` + `.sig` pair built on that target 
 - **Update not detected** — confirm `latest.json` is reachable at the endpoint URL and `version` is strictly greater than the installed version.
 - **Signature verification failed** — the `.sig` contents must match the exact `.tar.gz` uploaded. Rebuild if unsure.
 - **"Not supported on this Mac"** — architecture mismatch; rebuild for the target arch and update the matching platform entry.
+
+## Microsoft Store (MSIX app)
+
+Clearly is submitted to the Microsoft Store as an **MSIX app**. The
+Store signs uploaded MSIX packages with its own trusted certificate on
+ingestion, so we do not need — and do not purchase — a separate
+Authenticode code signing certificate. GitHub Releases distribution
+continues to ship an unsigned NSIS `.exe`; SmartScreen warnings on
+that path are accepted.
+
+The Store version of the app must **not** self-update: MSIX updates are
+delivered through the Microsoft Store, not through our Tauri updater.
+See "Build variants" below.
+
+### Prerequisites (one-time)
+
+- **Partner Center account** — registered under the "Windows" program
+  ($19 individual, one-time).
+- **Product reserved** — Store display name: `Clearly Desktop`.
+  Internal `productName`, identifier, and window title remain `Clearly`.
+- **Publisher identity** — issued by Partner Center once the product
+  is reserved. Takes the form `CN=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`
+  and must match the `Publisher` attribute inside the MSIX's
+  `AppxManifest.xml`.
+- **Privacy policy URL** — [PRIVACY.md](PRIVACY.md), served via the
+  GitHub blob URL:
+  `https://github.com/anvel-ai/clearly/blob/main/PRIVACY.md`
+
+### Store listing fields
+
+| Field | Value |
+|---|---|
+| Display name | Clearly Desktop |
+| Primary category | Productivity |
+| Secondary category | Developer tools |
+| Price | Free |
+| Devices | Windows 10/11 Desktop (x64) |
+| Package type | MSIX |
+| Privacy policy URL | (blob URL above) |
+
+Required assets — stored under `docs/store/windows/` when produced:
+
+- Store logo 300×300 PNG
+- At least one screenshot, 1366×768 or larger, PNG
+- Short description (≤200 chars)
+- Long description (≤10,000 chars)
+
+### Producing the MSIX
+
+Tauri v2 does not emit MSIX natively. Two supported paths:
+
+1. **MSIX Packaging Tool** (recommended for first submission) — a free
+   Microsoft-provided GUI. Feed it the `Clearly_<version>_x64-setup.exe`
+   produced by the existing NSIS build, walk through the conversion, and
+   it outputs a `.msix` with a generated `AppxManifest.xml` ready to
+   edit. Set `Publisher` to the Partner Center identity above and
+   `Identity/Name` to the Store product's package identity (shown under
+   "Product identity" in Partner Center).
+2. **`makeappx.exe` + `signtool.exe`** (for CI automation later) — from
+   the Windows SDK. Script the same conversion and run as a separate
+   matrix job triggered from `v*` tags.
+
+Either way, do not self-sign the MSIX for Store upload; upload the
+unsigned `.msix` and let the Store sign it.
+
+### Build variants
+
+For the Store submission, build Clearly with the updater disabled so it
+does not race with the Store's update delivery. The cleanest approach:
+
+- Gate the updater check in the frontend on a build-time flag (e.g.
+  `import.meta.env.VITE_STORE_BUILD`) and produce the Store build with
+  that flag set.
+- Optional stricter approach: remove the `updater` plugin from
+  `src-tauri/tauri.conf.json` in the Store build by using a separate
+  `tauri.store.conf.json` loaded with `--config`.
+
+### Submission flow
+
+1. Cut a GitHub release as usual (tag `vX.Y.Z`). The `windows-latest`
+   matrix job produces `Clearly_<version>_x64-setup.exe`.
+2. Locally, run the Store build (updater disabled) and convert to MSIX
+   via MSIX Packaging Tool. Output: `ClearlyDesktop_<version>_x64.msix`.
+3. In Partner Center → Clearly Desktop → **Packages** → upload the
+   `.msix`. Target devices: Windows 10 version 1809 or later, x64.
+4. Fill / update Store listing fields if anything changed.
+5. Submit for certification. First-time review typically takes 1–3
+   business days; subsequent version updates are usually faster.
+
+### Known gotchas
+
+- The `Publisher` in `AppxManifest.xml` must **exactly** match the
+  Partner Center publisher identity (case-sensitive). Any mismatch
+  fails certification with a signature-mismatch error.
+- The Store display name (`Clearly Desktop`) is **different** from the
+  internal product name (`Clearly`). Do not change
+  [src-tauri/tauri.conf.json](src-tauri/tauri.conf.json) `productName`
+  to match — users expect the shortcut and window title to stay
+  "Clearly".
+- An MSIX that still calls the Tauri updater endpoint can pass
+  certification but fails policy review on the grounds of "app
+  installs updates from outside the Store." Always build the Store
+  variant with updater disabled.
+- Age rating must be completed via the in-dashboard IARC questionnaire
+  before the first submission can be certified.
