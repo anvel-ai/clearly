@@ -16,11 +16,11 @@ This document covers how to cut a new release so existing users get the update p
 
 ### 1. Bump the version
 
-Update the version in all three files to the same value (next bump: `0.0.3` → `0.0.4`):
+Update the version in all three files to the same value (next bump: `0.0.4` → `0.1.0`):
 
-- `package.json` — `"version": "0.0.4"`
-- `src-tauri/Cargo.toml` — `version = "0.0.4"`
-- `src-tauri/tauri.conf.json` — `"version": "0.0.4"`
+- `package.json` — `"version": "0.1.0"`
+- `src-tauri/Cargo.toml` — `version = "0.1.0"`
+- `src-tauri/tauri.conf.json` — `"version": "0.1.0"`
 
 ### 2. Build signed artifacts
 
@@ -42,13 +42,13 @@ Create a file named `latest.json` with this shape:
 
 ```json
 {
-  "version": "0.0.4",
+  "version": "0.1.0",
   "notes": "Mermaid 렌더링 개선, 새 기능 등",
   "pub_date": "2026-04-20T10:00:00Z",
   "platforms": {
     "darwin-aarch64": {
       "signature": "<paste contents of Clearly.app.tar.gz.sig>",
-      "url": "https://github.com/anvel-ai/clearly/releases/download/v0.0.4/Clearly.app.tar.gz"
+      "url": "https://github.com/anvel-ai/clearly/releases/download/v0.1.0/Clearly.app.tar.gz"
     }
   }
 }
@@ -62,11 +62,11 @@ cat src-tauri/target/release/bundle/macos/Clearly.app.tar.gz.sig
 
 ### 4. Publish the GitHub Release
 
-1. Tag: `v0.0.4`
+1. Tag: `v0.1.0`
 2. Upload these files as release assets:
    - `Clearly.app.tar.gz`
    - `Clearly.app.tar.gz.sig`
-   - `Clearly_0.0.4_aarch64.dmg` (for first-time installs)
+   - `Clearly_0.1.0_aarch64.dmg` (for first-time installs)
    - `latest.json`
 3. Mark as **Latest release** (so `/releases/latest/download/latest.json` resolves).
 
