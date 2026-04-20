@@ -11,10 +11,10 @@ export default function UpdateBanner() {
     return (
       <div className="update-banner">
         <span className="update-banner-text">
-          새 버전 <strong>v{version}</strong>이(가) 있어요.
+          A new version <strong>v{version}</strong> is available.
         </span>
         <button className="update-banner-btn" onClick={installUpdate}>
-          지금 설치
+          Install now
         </button>
       </div>
     );
@@ -24,7 +24,7 @@ export default function UpdateBanner() {
     const pct = Math.round(status.progress * 100);
     return (
       <div className="update-banner">
-        <span className="update-banner-text">업데이트 다운로드 중… {pct}%</span>
+        <span className="update-banner-text">Downloading update… {pct}%</span>
       </div>
     );
   }
@@ -32,7 +32,7 @@ export default function UpdateBanner() {
   if (status.kind === "ready") {
     return (
       <div className="update-banner">
-        <span className="update-banner-text">설치 완료. 앱을 재시작할게요…</span>
+        <span className="update-banner-text">Install complete. Restarting…</span>
       </div>
     );
   }
@@ -41,7 +41,7 @@ export default function UpdateBanner() {
     return (
       <div className="update-banner update-banner-error">
         <span className="update-banner-text">
-          업데이트 확인 실패: {status.message}
+          Update check failed: {status.message}
         </span>
       </div>
     );

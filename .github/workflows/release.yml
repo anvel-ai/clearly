@@ -95,7 +95,7 @@ jobs:
             - **Windows** — `-setup.exe` / `.msi` (x64)
             - **Linux** — `.AppImage` / `.deb`
 
-            기존 사용자는 앱 내 업데이트 배너를 통해 자동으로 갱신됩니다.
+            Existing users will receive this update automatically via the in-app update banner.
           releaseDraft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
           args: --target ${{ matrix.target }}

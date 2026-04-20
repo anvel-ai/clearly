@@ -43,7 +43,7 @@ Create a file named `latest.json` with this shape:
 ```json
 {
   "version": "0.1.0",
-  "notes": "Mermaid 렌더링 개선, 새 기능 등",
+  "notes": "Mermaid rendering improvements, new features, etc.",
   "pub_date": "2026-04-20T10:00:00Z",
   "platforms": {
     "darwin-aarch64": {
@@ -73,7 +73,7 @@ cat src-tauri/target/release/bundle/macos/Clearly.app.tar.gz.sig
 ### 5. Verify
 
 Launch an older installed version — within a few seconds the update banner should appear.
-Clicking "지금 설치" downloads the `.tar.gz`, verifies the signature with the embedded public key, swaps the app, and relaunches.
+Clicking "Install now" downloads the `.tar.gz`, verifies the signature with the embedded public key, swaps the app, and relaunches.
 
 ## Adding platforms
 
